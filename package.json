@@ -8,7 +8,7 @@
     "lint": "npx eslint .",
     "mongod": "mongod",
     "start": "node app.js",
-    "dev": "start http://localhost:3000/ & nodemon app.js"
+    "dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
