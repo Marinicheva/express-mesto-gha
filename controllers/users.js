@@ -13,9 +13,9 @@ const createUser = (req, res) => {
 };
 
 const getUserById = (req, res) => {
-  const { id } = req.params;
+  const { userId } = req.params;
 
-  return User.findById(id).orFail(new Error('Not found')) // Посмотри в слак в чате группы пост от Жени какой там красивый текст ошибки
+  return User.findById(userId).orFail(new Error('Not found')) // Посмотри в слак в чате группы пост от Жени какой там красивый текст ошибки
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.message === 'Not found') {
