@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/user');
 
 const getUsers = (req, res) => User.find({})
@@ -9,7 +10,12 @@ const createUser = (req, res) => {
 
   return User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        return res.status(400).send({ message: err.message });
+      }
+      return res.status(500).send({ message: err.message });
+    });
 };
 
 const getUserById = (req, res) => {
@@ -18,9 +24,14 @@ const getUserById = (req, res) => {
   return User.findById(userId).orFail(new Error('Not found')) // Посмотри в слак в чате группы пост от Жени какой там красивый текст ошибки
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.message === 'Not found') {
-        return res.status(404).send('Пользователь с таким id не найден');
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: err.message });
       }
+
+      if (err.message === 'Not found') {
+        return res.status(404).send({ message: 'Пользователь с таким id не найден' });
+      }
+
       return res.status(500).send({ message: err.message });
     });
 };
@@ -38,9 +49,14 @@ const updateUser = (req, res) => {
   ).orFail(new Error('Not found')) // Посмотри в слак в чате группы пост от Жени какой там красивый текст ошибки
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.message === 'Not found') {
-        return res.status(404).send('Пользователь с таким id не найден');
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: err.message });
       }
+
+      if (err.message === 'Not found') {
+        return res.status(404).send({ message: 'Пользователь с таким id не найден' });
+      }
+
       return res.status(500).send({ message: err.message });
     });
 };
@@ -58,9 +74,14 @@ const updateAvatar = (req, res) => {
   ).orFail(new Error('Not found')) // Посмотри в слак в чате группы пост от Жени какой там красивый текст ошибки
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.message === 'Not found') {
-        return res.status(404).send('Пользователь с таким id не найден');
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: err.message });
       }
+
+      if (err.message === 'Not found') {
+        return res.status(404).send({ message: 'Пользователь с таким id не найден' });
+      }
+
       return res.status(500).send({ message: err.message });
     });
 };

@@ -1,9 +1,10 @@
+const mongoose = require('mongoose');
 const Card = require('../models/card');
 
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => res.status(500).send(err.message));
+    .catch((err) => res.status(500).send({ message: err.message }));
 };
 
 const createCard = (req, res) => {
@@ -11,18 +12,39 @@ const createCard = (req, res) => {
 
   return Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        return res.status(400).send({ message: err.message });
+      }
+      return res.status(500).send({ message: err.message });
+    });
 };
 
 const deleteCard = (req, res) => {
   const { cardId } = req.params;
 
-  return Card.findByIdAndRemove(cardId).orFail(new Error('Not found')) // Посмотри в слак в чате группы пост от Жени какой там красивый текст ошибки
+  return Card.findById(cardId).orFail(new Error('Not found')) // Посмотри в слак в чате группы пост от Жени какой там красивый текст ошибки
+    .then((card) => {
+      if (card.owner !== req.user._id) {
+        // eslint-disable-next-line no-throw-literal
+        throw new Error('Forbidden');
+      }
+      return Card.findByIdAndRemove(cardId);
+    })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.message === 'Not found') {
-        return res.status(404).send('Карточка с таким id не найдена');
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: err.message });
       }
+
+      if (err.message === 'Forbidden') {
+        return res.status(403).send({ message: err.message });
+      }
+
+      if (err.message === 'Not found') {
+        return res.status(404).send({ message: err.message });
+      }
+
       return res.status(500).send({ message: err.message });
     });
 };
@@ -35,9 +57,14 @@ const addLike = (req, res) => {
   ).orFail(new Error('Not found'))
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.message === 'Not found') {
-        return res.status(404).send('Карточка с таким id не найдена');
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: err.message });
       }
+
+      if (err.message === 'Not found') {
+        return res.status(404).send({ message: err.message });
+      }
+
       return res.status(500).send({ message: err.message });
     });
 };
@@ -50,8 +77,12 @@ const removeLike = (req, res) => {
   ).orFail(new Error('Not found'))
     .then((card) => res.send(card))
     .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: err.message });
+      }
+
       if (err.message === 'Not found') {
-        return res.status(404).send('Карточка с таким id не найдена');
+        return res.status(404).send({ message: err.message });
       }
       return res.status(500).send({ message: err.message });
     });
