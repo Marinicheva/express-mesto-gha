@@ -26,12 +26,31 @@ const getUserById = (req, res) => {
 };
 
 const updateUser = (req, res) => {
-  const { id } = req.params;
   const { name, about } = req.body;
 
   return User.findByIdAndUpdate(
-    id,
+    req.user._id,
     { name, about },
+    {
+      new: true,
+      runValidators: true,
+    },
+  ).orFail(new Error('Not found')) // Посмотри в слак в чате группы пост от Жени какой там красивый текст ошибки
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.message === 'Not found') {
+        return res.status(404).send('Пользователь с таким id не найден');
+      }
+      return res.status(500).send({ message: err.message });
+    });
+};
+
+const updateAvatar = (req, res) => {
+  const { avatar } = req.body;
+
+  return User.findByIdAndUpdate(
+    req.user._id,
+    { avatar },
     {
       new: true,
       runValidators: true,
@@ -51,4 +70,5 @@ module.exports = {
   createUser,
   getUserById,
   updateUser,
+  updateAvatar,
 };
