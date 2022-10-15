@@ -1,30 +1,32 @@
 [![Tests for sprint 13](https://github.com/Marinicheva/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/Marinicheva/express-mesto-gha/actions/workflows/tests-13-sprint.yml) 
 
-[![Tests for sprint 14](https://github.com/Marinicheva/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/Marinicheva/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
-# Проект Mesto фронтенд + бэкенд
+#  Учебный проект Mesto (бэкенд)
+## Описание проекта
+Mesto - это сервис, с помощью которого можно делиться с другими пользователями Интернета своими фотографиями.
+В данном проекте выполнена реализация бэкенд части проекта, в которой предусмотрено: 
+* запуск сервера;
+* установка соединения с NoSQL БД - MongoDB;
+* создание основных маршрутов;
+* обработка запросов по маршрутам;
+* описание схем и моделей документов в БД;
+* отловка и обработка возможных ошибок;
 
+Код проекта можно посмотреть по ссылке  [тут](https://github.com/Marinicheva/express-mesto-gha).
 
+В работе над данным проектом были использованы следующие методы и технологии:
 
-## Настройка бейджей статуса тестов
-Перед началом работы над проектом рекомендуется исправить бейджи, отражающие статус прохождения тестов.
-Для этого замените разметку бейджей на следующий фрагмент, подставив вместо `${имя_пользователя}` и `${имя_репозитория}` соответствующие значения.
-
-```
-[![Tests for sprint 13](https://github.com/${имя_пользователя}/${имя репозитория}/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/${имя_пользователя}/${имя репозитория}/actions/workflows/tests-13-sprint.yml) 
-
-[![Tests for sprint 14](https://github.com/${имя_пользователя}/${имя репозитория}/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/${имя_пользователя}/${имя репозитория}/actions/workflows/tests-14-sprint.yml)
-```
-
-
-## Директории
-
-`/routes` — папка с файлами роутера  
-`/controllers` — папка с файлами контроллеров пользователя и карточки   
-`/models` — папка с файлами описания схем пользователя и карточки  
+- Node.js
+- Express
+- MongoDB
+- Mongoose
+- ESLint
   
-Остальные директории вспомогательные, создаются при необходимости разработчиком
+##  Запуск проекта
 
-## Запуск проекта
+`npm install` - для устновки необходимых для функционирования проекта пакетов
 
-`npm run start` — запускает сервер   
+`npm run mongod` - перед запуском самого проекта (как в продакшен версии, так и режиме разработки) необходимо выполнить данную команду для подключения к БД
+
+`npm run start` — запускает сервер
+
 `npm run dev` — запускает сервер с hot-reload
