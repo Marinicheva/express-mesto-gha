@@ -40,7 +40,7 @@ const deleteCard = (req, res) => {
   return Card.findById(cardId)
     .orFail(new Error('NotFoundError'))
     .then((card) => {
-      if (card.owner !== req.user._id) {
+      if (card.owner.toString() !== req.user._id) {
         throw new Error('Forbidden');
       }
       return Card.findByIdAndRemove(req.params.cardId);
