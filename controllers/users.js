@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
 
+const ERRORS = require('../utils/constants');
+
 const getUsers = (req, res) => User.find({})
   .then((users) => res.send(users))
-  .catch((err) => res.status(500).send({ message: err.message }));
+  .catch(() => res
+    .status(ERRORS.defaultError.errorCode)
+    .send({ message: ERRORS.defaultError.errorMessage }));
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
@@ -12,27 +16,37 @@ const createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: err.message });
+        return res
+          .status(ERRORS.badRequest.errorCode)
+          .send({ message: ERRORS.badRequest.errorMessage });
       }
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(ERRORS.defaultError.errorCode)
+        .send({ message: ERRORS.defaultError.errorMessage });
     });
 };
 
 const getUserById = (req, res) => {
   const { userId } = req.params;
 
-  return User.findById(userId).orFail(new Error('Not found')) // Посмотри в слак в чате группы пост от Жени какой там красивый текст ошибки
+  return User.findById(userId).orFail(new Error('Not found'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(400).send({ message: err.message });
+        return res
+          .status(ERRORS.badRequest.errorCode)
+          .send({ message: ERRORS.badRequest.errorMessage });
       }
 
       if (err.message === 'Not found') {
-        return res.status(404).send({ message: 'Пользователь с таким id не найден' });
+        return res
+          .status(ERRORS.notFound.errorCode)
+          .send({ message: ERRORS.notFound.errorMessage });
       }
 
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(ERRORS.defaultError.errorCode)
+        .send({ message: ERRORS.defaultError.errorMessage });
     });
 };
 
@@ -46,18 +60,24 @@ const updateUser = (req, res) => {
       new: true,
       runValidators: true,
     },
-  ).orFail(new Error('Not found')) // Посмотри в слак в чате группы пост от Жени какой там красивый текст ошибки
+  ).orFail(new Error('Not found'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(400).send({ message: err.message });
+        return res
+          .status(ERRORS.badRequest.errorCode)
+          .send({ message: ERRORS.badRequest.errorMessage });
       }
 
       if (err.message === 'Not found') {
-        return res.status(404).send({ message: 'Пользователь с таким id не найден' });
+        return res
+          .status(ERRORS.notFound.errorCode)
+          .send({ message: ERRORS.notFound.errorMessage });
       }
 
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(ERRORS.defaultError.errorCode)
+        .send({ message: ERRORS.defaultError.errorMessage });
     });
 };
 
@@ -71,18 +91,24 @@ const updateAvatar = (req, res) => {
       new: true,
       runValidators: true,
     },
-  ).orFail(new Error('Not found')) // Посмотри в слак в чате группы пост от Жени какой там красивый текст ошибки
+  ).orFail(new Error('Not found'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(400).send({ message: err.message });
+        return res
+          .status(ERRORS.badRequest.errorCode)
+          .send({ message: ERRORS.badRequest.errorMessage });
       }
 
       if (err.message === 'Not found') {
-        return res.status(404).send({ message: 'Пользователь с таким id не найден' });
+        return res
+          .status(ERRORS.notFound.errorCode)
+          .send({ message: ERRORS.notFound.errorMessage });
       }
 
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(ERRORS.defaultError.errorCode)
+        .send({ message: ERRORS.defaultError.errorMessage });
     });
 };
 

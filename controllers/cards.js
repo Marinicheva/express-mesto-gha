@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
 
+const ERRORS = require('../utils/constants');
+
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(() => res
+      .status(ERRORS.defaultError.errorCode)
+      .send({ message: ERRORS.defaultError.errorMessage }));
 };
 
 const createCard = (req, res) => {
@@ -14,38 +18,50 @@ const createCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: err.message });
+        return res
+          .status(ERRORS.badRequest.errorCode)
+          .send({ message: ERRORS.badRequest.errorMessage });
       }
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(ERRORS.defaultError.errorCode)
+        .send({ message: ERRORS.defaultError.errorMessage });
     });
 };
 
 const deleteCard = (req, res) => {
   const { cardId } = req.params;
 
-  return Card.findById(cardId).orFail(new Error('Not found')) // Посмотри в слак в чате группы пост от Жени какой там красивый текст ошибки
+  return Card.findById(cardId)
+    .orFail(new Error('NotFoundError'))
     .then((card) => {
       if (card.owner !== req.user._id) {
-        // eslint-disable-next-line no-throw-literal
         throw new Error('Forbidden');
       }
-      return Card.findByIdAndRemove(cardId);
+      return Card.findByIdAndRemove(req.params.cardId);
     })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(400).send({ message: err.message });
+        return res
+          .status(ERRORS.badRequest.errorCode)
+          .send({ message: ERRORS.badRequest.errorMessage });
       }
 
       if (err.message === 'Forbidden') {
-        return res.status(403).send({ message: err.message });
+        return res
+          .status(ERRORS.forbidden.errorCode)
+          .send({ message: ERRORS.forbidden.errorMessage });
       }
 
-      if (err.message === 'Not found') {
-        return res.status(404).send({ message: err.message });
+      if (err.name === 'NotFoundError') {
+        return res
+          .status(ERRORS.notFound.errorCode)
+          .send({ message: ERRORS.notFound.errorMessage });
       }
 
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(ERRORS.defaultError.errorCode)
+        .send({ message: ERRORS.defaultError.errorMessage });
     });
 };
 
@@ -54,18 +70,24 @@ const addLike = (req, res) => {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
-  ).orFail(new Error('Not found'))
+  ).orFail(new Error('NotFoundError'))
     .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(400).send({ message: err.message });
+        return res
+          .status(ERRORS.badRequest.errorCode)
+          .send({ message: ERRORS.badRequest.errorMessage });
       }
 
-      if (err.message === 'Not found') {
-        return res.status(404).send({ message: err.message });
+      if (err.name === 'NotFoundError') {
+        return res
+          .status(ERRORS.notFound.errorCode)
+          .send({ message: ERRORS.notFound.errorMessage });
       }
 
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(ERRORS.defaultError.errorCode)
+        .send({ message: ERRORS.defaultError.errorMessage });
     });
 };
 
@@ -74,17 +96,23 @@ const removeLike = (req, res) => {
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
-  ).orFail(new Error('Not found'))
+  ).orFail(new Error('NotFoundError'))
     .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(400).send({ message: err.message });
+        return res
+          .status(ERRORS.badRequest.errorCode)
+          .send({ message: ERRORS.badRequest.errorMessage });
       }
 
-      if (err.message === 'Not found') {
-        return res.status(404).send({ message: err.message });
+      if (err.name === 'NotFoundError') {
+        return res
+          .status(ERRORS.notFound.errorCode)
+          .send({ message: ERRORS.notFound.errorMessage });
       }
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(ERRORS.defaultError.errorCode)
+        .send({ message: ERRORS.defaultError.errorMessage });
     });
 };
 
