@@ -13,7 +13,7 @@ const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   return User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return res
@@ -63,6 +63,12 @@ const updateUser = (req, res) => {
   ).orFail(new Error('Not found'))
     .then((user) => res.send(user))
     .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        return res
+          .status(ERRORS.badRequest.errorCode)
+          .send({ message: ERRORS.badRequest.errorMessage });
+      }
+
       if (err instanceof mongoose.Error.CastError) {
         return res
           .status(ERRORS.badRequest.errorCode)

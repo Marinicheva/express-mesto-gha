@@ -14,8 +14,15 @@ const getCards = (req, res) => {
 const createCard = (req, res) => {
   const { name, link } = req.body;
 
-  return Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.send({ data: card }))
+  return Card.create(
+    {
+      name,
+      link,
+      owner: req.user._id,
+    },
+    { validateBeforeSave: true },
+  )
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return res
@@ -53,7 +60,7 @@ const deleteCard = (req, res) => {
           .send({ message: ERRORS.forbidden.errorMessage });
       }
 
-      if (err.name === 'NotFoundError') {
+      if (err.message === 'NotFoundError') {
         return res
           .status(ERRORS.notFound.errorCode)
           .send({ message: ERRORS.notFound.errorMessage });
@@ -66,11 +73,13 @@ const deleteCard = (req, res) => {
 };
 
 const addLike = (req, res) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true },
-  ).orFail(new Error('NotFoundError'))
+  Card.findById(req.params.cardId)
+    .orFail(new Error('NotFoundError'))
+    .then(() => Card.findByIdAndUpdate(
+      req.params.cardId,
+      { $addToSet: { likes: req.user._id } },
+      { new: true },
+    ))
     .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
@@ -79,7 +88,7 @@ const addLike = (req, res) => {
           .send({ message: ERRORS.badRequest.errorMessage });
       }
 
-      if (err.name === 'NotFoundError') {
+      if (err.message === 'NotFoundError') {
         return res
           .status(ERRORS.notFound.errorCode)
           .send({ message: ERRORS.notFound.errorMessage });
@@ -87,11 +96,11 @@ const addLike = (req, res) => {
 
       return res
         .status(ERRORS.defaultError.errorCode)
-        .send({ message: ERRORS.defaultError.errorMessage });
+        .send({ message: ERRORS.defaultError.errorMessage, err });
     });
 };
 
-const removeLike = (req, res) => {
+const removeLike = (req, res) => { // Сначала найти по id, а потом вызывать найти и обновить
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -105,7 +114,7 @@ const removeLike = (req, res) => {
           .send({ message: ERRORS.badRequest.errorMessage });
       }
 
-      if (err.name === 'NotFoundError') {
+      if (err.message === 'NotFoundError') {
         return res
           .status(ERRORS.notFound.errorCode)
           .send({ message: ERRORS.notFound.errorMessage });
