@@ -20,7 +20,6 @@ const createCard = (req, res) => {
       link,
       owner: req.user._id,
     },
-    { validateBeforeSave: true },
   )
     .then((card) => res.send(card))
     .catch((err) => {
