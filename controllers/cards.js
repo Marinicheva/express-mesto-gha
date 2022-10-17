@@ -99,7 +99,7 @@ const addLike = (req, res) => {
     });
 };
 
-const removeLike = (req, res) => { // Сначала найти по id, а потом вызывать найти и обновить
+const removeLike = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
