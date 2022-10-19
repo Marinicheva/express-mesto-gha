@@ -61,7 +61,7 @@ const updateUser = (req, res) => {
       runValidators: true,
     },
   ).orFail(new Error('Not found'))
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         return res
