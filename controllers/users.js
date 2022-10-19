@@ -53,7 +53,7 @@ const getUserById = (req, res) => {
 const updateUser = (req, res) => {
   const { name, about } = req.body;
 
-  return User.findByIdAndUpdate(
+  User.findByIdAndUpdate(
     req.user._id,
     { name, about },
     {
