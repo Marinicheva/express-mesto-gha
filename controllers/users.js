@@ -62,6 +62,14 @@ const getUsers = (req, res) => User.find({})
     .status(ERRORS.defaultError.errorCode)
     .send({ message: ERRORS.defaultError.errorMessage }));
 
+const getUserInfo = (req, res) => {
+  const userID = req.user._id;
+
+  User.findById(userID)
+    .then((user) => res.send(user))
+    .catch((err) => res.send({ message: err.message }));
+};
+
 const getUserById = (req, res) => {
   const { userId } = req.params;
 
@@ -158,6 +166,7 @@ module.exports = {
   createUser,
   login,
   getUsers,
+  getUserInfo,
   getUserById,
   updateUser,
   updateAvatar,
