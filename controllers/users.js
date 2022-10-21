@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 const ERRORS = require('../utils/constants');
@@ -10,19 +11,34 @@ const getUsers = (req, res) => User.find({})
     .send({ message: ERRORS.defaultError.errorMessage }));
 
 const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
+  const {
+    email,
+    password,
+    name,
+    about,
+    avatar,
+  } = req.body;
 
-  return User.create({ name, about, avatar })
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        return res
-          .status(ERRORS.badRequest.errorCode)
-          .send({ message: ERRORS.badRequest.errorMessage });
-      }
-      return res
-        .status(ERRORS.defaultError.errorCode)
-        .send({ message: ERRORS.defaultError.errorMessage });
+  bcrypt.hash(password, 10)
+    .then((hash) => {
+      User.create({
+        email,
+        password: hash,
+        name,
+        about,
+        avatar,
+      })
+        .then((user) => res.send(user))
+        .catch((err) => {
+          if (err instanceof mongoose.Error.ValidationError) {
+            return res
+              .status(ERRORS.badRequest.errorCode)
+              .send({ message: ERRORS.badRequest.errorMessage });
+          }
+          return res
+            .status(ERRORS.defaultError.errorCode)
+            .send({ message: ERRORS.defaultError.errorMessage });
+        });
     });
 };
 
