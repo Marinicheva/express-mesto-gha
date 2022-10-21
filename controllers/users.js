@@ -4,12 +4,6 @@ const User = require('../models/user');
 
 const ERRORS = require('../utils/constants');
 
-const getUsers = (req, res) => User.find({})
-  .then((users) => res.send(users))
-  .catch(() => res
-    .status(ERRORS.defaultError.errorCode)
-    .send({ message: ERRORS.defaultError.errorMessage }));
-
 const createUser = (req, res) => {
   const {
     email,
@@ -18,6 +12,12 @@ const createUser = (req, res) => {
     about,
     avatar,
   } = req.body;
+
+  // TODO Обработка отсутствия пароля в запросе !!!
+  if (!password) {
+    res.status(400)
+      .send('Пароля нет');
+  }
 
   bcrypt.hash(password, 10)
     .then((hash) => {
@@ -41,6 +41,12 @@ const createUser = (req, res) => {
         });
     });
 };
+
+const getUsers = (req, res) => User.find({})
+  .then((users) => res.send(users))
+  .catch(() => res
+    .status(ERRORS.defaultError.errorCode)
+    .send({ message: ERRORS.defaultError.errorMessage }));
 
 const getUserById = (req, res) => {
   const { userId } = req.params;
