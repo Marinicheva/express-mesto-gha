@@ -52,11 +52,10 @@ userSchema.static.findUserByCredentials = function (email, password) {
       }
 
       return bcrypt.compare(password, user.password)
-        .then((ismatched) => {
-          if (!ismatched) {
+        .then((matched) => {
+          if (!matched) {
             Promise.reject(new Error('Неправильная почта или пароль'));
           }
-          return user;
         });
     });
 };
