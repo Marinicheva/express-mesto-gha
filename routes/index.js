@@ -13,10 +13,8 @@ const ERRORS = require('../utils/constants');
 router.post('/signin', login);
 router.post('/signup', createUser);
 
-router.use(auth);
-
-router.use('/users', userRouter);
-router.use('/cards', cardRouter);
+router.use('/users', auth, userRouter);
+router.use('/cards', auth, cardRouter);
 
 router.get('/', (req, res) => {
   res.send('Это сейчас я маленькая строка. Но когда-нибудь я стану ГЛАВНОЙ страницей');

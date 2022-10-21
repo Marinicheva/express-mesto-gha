@@ -14,7 +14,6 @@ const auth = (req, res, next) => {
 
   try {
     playload = jwt.verify(token, 'secret');
-    // console.log('playload', playload);
     req.user = playload;
     next();
   } catch (err) {
