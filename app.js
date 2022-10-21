@@ -8,6 +8,7 @@ app.use(express.json());
 
 mongoose.connect(MONGO_URL);
 
+// TODO не забудь удалить hardcode ниже
 app.use((req, res, next) => {
   req.user = {
     _id: '634824bf25d513763e707942',

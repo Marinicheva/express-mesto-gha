@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
+const User = require('../models/user');
 const ERRORS = require('../utils/constants');
 
 const createUser = (req, res) => {
@@ -13,10 +14,10 @@ const createUser = (req, res) => {
     avatar,
   } = req.body;
 
-  // TODO Обработка отсутствия пароля в запросе !!!
-  if (!password) {
+  // TODO Обработка отсутствия или недостаточной длины пароля !!!
+  if (!password || password.length < 8) {
     res.status(400)
-      .send('Пароля нет');
+      .send('Пароль должен быть не менее 8 символов');
   }
 
   bcrypt.hash(password, 10)
@@ -46,7 +47,10 @@ const login = (req, res) => {
   const { email, password } = req.body;
 
   User.findUserByCredentials(email, password)
-    .then((user) => user)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'secret', { expiresIn: '7d' }); // TODO вместо secret надо сформировать строку для токена
+      res.send(token); // TODO Токен сохраним в куках
+    })
     .catch((err) => res
       .status(401)
       .send({ message: err.message }));
