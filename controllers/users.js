@@ -9,8 +9,6 @@ const {
   ConflictError,
 } = require('../utils/errors');
 
-const ERRORS = require('../utils/constants'); // TODO Don't forget to remove when set central errorHandler
-
 const createUser = (req, res, next) => {
   const {
     email,
@@ -81,29 +79,29 @@ const getUserInfo = (req, res, next) => {
     .catch(next);
 };
 
-const getUserById = (req, res) => { // TODO Думаю этот метод больше не нужен
-  const { userId } = req.params;
+// const getUserById = (req, res) => { // TODO Думаю этот метод больше не нужен
+//   const { userId } = req.params;
 
-  return User.findById(userId).orFail(new Error('Not found'))
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
-        return res
-          .status(ERRORS.badRequest.errorCode)
-          .send({ message: ERRORS.badRequest.errorMessage });
-      }
+//   return User.findById(userId).orFail(new Error('Not found'))
+//     .then((user) => res.send({ data: user }))
+//     .catch((err) => {
+//       if (err instanceof mongoose.Error.CastError) {
+//         return res
+//           .status(ERRORS.badRequest.errorCode)
+//           .send({ message: ERRORS.badRequest.errorMessage });
+//       }
 
-      if (err.message === 'Not found') {
-        return res
-          .status(ERRORS.notFound.errorCode)
-          .send({ message: ERRORS.notFound.errorMessage });
-      }
+//       if (err.message === 'Not found') {
+//         return res
+//           .status(ERRORS.notFound.errorCode)
+//           .send({ message: ERRORS.notFound.errorMessage });
+//       }
 
-      return res
-        .status(ERRORS.defaultError.errorCode)
-        .send({ message: ERRORS.defaultError.errorMessage });
-    });
-};
+//       return res
+//         .status(ERRORS.defaultError.errorCode)
+//         .send({ message: ERRORS.defaultError.errorMessage });
+//     });
+// };
 
 const updateUser = (req, res, next) => {
   const userId = req.user._id;
@@ -161,7 +159,7 @@ module.exports = {
   login,
   getUsers,
   getUserInfo,
-  getUserById,
+  // getUserById,
   updateUser,
   updateAvatar,
 };

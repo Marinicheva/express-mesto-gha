@@ -1,20 +1,24 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
 
-const ERRORS = require('../utils/constants');
+const {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+} = require('../utils/errors');
 
-const getCards = (req, res) => {
+const ERRORS = require('../utils/constants'); // TODO Don't forget to remove when set central errorHandler
+
+const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => res
-      .status(ERRORS.defaultError.errorCode)
-      .send({ message: ERRORS.defaultError.errorMessage }));
+    .catch(next);
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
 
-  return Card.create(
+  Card.create(
     {
       name,
       link,
@@ -23,79 +27,54 @@ const createCard = (req, res) => {
   )
     .then((card) => res.send(card))
     .catch((err) => {
+      // Некорретные данные
       if (err instanceof mongoose.Error.ValidationError) {
-        return res
-          .status(ERRORS.badRequest.errorCode)
-          .send({ message: ERRORS.badRequest.errorMessage });
+        next(new BadRequestError('Переданы некорректные данные'));
       }
-      return res
-        .status(ERRORS.defaultError.errorCode)
-        .send({ message: ERRORS.defaultError.errorMessage });
+      next(err);
     });
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
 
-  return Card.findById(cardId)
-    .orFail(new Error('NotFoundError'))
+  Card.findById(cardId)
+    .orFail(new NotFoundError(`Карточка с id ${cardId} не найдена`))
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
-        throw new Error('Forbidden');
+        throw new ForbiddenError('Нет прав для выполнения этого действия');
       }
-      return Card.findByIdAndRemove(req.params.cardId);
+
+      Card.findByIdAndRemove(cardId)
+        .then((deletedCard) => res.send(deletedCard));
     })
-    .then((card) => res.send(card))
     .catch((err) => {
+      // Некорректный ID карточки
       if (err instanceof mongoose.Error.CastError) {
-        return res
-          .status(ERRORS.badRequest.errorCode)
-          .send({ message: ERRORS.badRequest.errorMessage });
+        next(new BadRequestError('Указан некорректный id картчоки'));
       }
 
-      if (err.message === 'Forbidden') {
-        return res
-          .status(ERRORS.forbidden.errorCode)
-          .send({ message: ERRORS.forbidden.errorMessage });
-      }
-
-      if (err.message === 'NotFoundError') {
-        return res
-          .status(ERRORS.notFound.errorCode)
-          .send({ message: ERRORS.notFound.errorMessage });
-      }
-
-      return res
-        .status(ERRORS.defaultError.errorCode)
-        .send({ message: ERRORS.defaultError.errorMessage });
+      next(err);
     });
 };
 
-const addLike = (req, res) => {
-  Card.findById(req.params.cardId)
-    .orFail(new Error('NotFoundError'))
-    .then(() => Card.findByIdAndUpdate(
-      req.params.cardId,
-      { $addToSet: { likes: req.user._id } },
-      { new: true },
-    ))
+const addLike = (req, res, next) => {
+  const { cardId } = req.params;
+
+  Card.findByIdAndUpdate(
+    cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+  )
+    .orFail(new NotFoundError(`Карточка с id ${cardId} не найдена`))
     .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res
-          .status(ERRORS.badRequest.errorCode)
-          .send({ message: ERRORS.badRequest.errorMessage });
+        // Некорректный id карточки
+        next(new BadRequestError('Передан некорректный id карточки'));
       }
 
-      if (err.message === 'NotFoundError') {
-        return res
-          .status(ERRORS.notFound.errorCode)
-          .send({ message: ERRORS.notFound.errorMessage });
-      }
-
-      return res
-        .status(ERRORS.defaultError.errorCode)
-        .send({ message: ERRORS.defaultError.errorMessage, err });
+      next(err);
     });
 };
 
