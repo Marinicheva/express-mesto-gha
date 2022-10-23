@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 const router = require('./routes');
 const handleErrors = require('./middlewares/handleErrors');
 
@@ -11,6 +12,7 @@ mongoose.connect(MONGO_URL);
 
 app.use('/', router);
 
+app.use(errors());
 app.use(handleErrors);
 
 app.listen(PORT);

@@ -1,17 +1,18 @@
 const router = require('express').Router();
+const { celebrate } = require('celebrate');
 
 const userRouter = require('./users');
 const cardRouter = require('./cards');
 
-const {
-  createUser,
-  login,
-} = require('../controllers/users');
+const { createUser, login } = require('../controllers/users');
+
+const { signupSchema } = require('../utils/userValidationSchemas');
+
 const { auth } = require('../middlewares/auth');
 const { NotFoundError } = require('../utils/errors');
 
+router.post('/signup', celebrate(signupSchema), createUser);
 router.post('/signin', login);
-router.post('/signup', createUser);
 
 router.use('/users', auth, userRouter);
 router.use('/cards', auth, cardRouter);
