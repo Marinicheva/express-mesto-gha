@@ -8,7 +8,7 @@ const {
   login,
 } = require('../controllers/users');
 const { auth } = require('../middlewares/auth');
-const ERRORS = require('../utils/constants');
+const { NotFoundError } = require('../utils/errors');
 
 router.post('/signin', login);
 router.post('/signup', createUser);
@@ -20,8 +20,8 @@ router.get('/', (req, res) => {
   res.send('Это сейчас я маленькая строка. Но когда-нибудь я стану ГЛАВНОЙ страницей');
 });
 
-router.use('*', (req, res) => {
-  res.status(ERRORS.notFound.errorCode).send({ message: ERRORS.notFound.errorMessage });
+router.use('*', (req, res, next) => {
+  next(new NotFoundError('Запрашиваемый ресурс не найден'));
 });
 
 module.exports = router;
