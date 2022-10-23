@@ -18,11 +18,6 @@ const createUser = (req, res, next) => {
     avatar,
   } = req.body;
 
-  // Пароль не передан или слишком короткий
-  // if (!password || password.length < 8) {
-  //   throw new BadRequestError('Пароль должен быть не менее 8 символов');
-  // }
-
   bcrypt.hash(password, 10)
     .then((hash) => {
       User.create({
@@ -60,7 +55,7 @@ const login = (req, res, next) => {
           maxAge: 3600000,
           httpOnly: true,
         })
-        .send('Авторизация прошла успешно');
+        .send({ message: 'Авторизация прошла успешно' });
     })
     .catch((err) => {
       next(err);
@@ -74,7 +69,8 @@ const getUsers = (req, res, next) => User.find({})
 const getUserInfo = (req, res, next) => {
   const userId = req.user._id;
 
-  User.findById(userId).orFail(new NotFoundError(`Пользователь с id ${userId} не найден`))
+  User.findById(userId)
+    .orFail(new NotFoundError(`Пользователь с id ${userId} не найден`))
     .then((user) => res.send(user))
     .catch(next);
 };
@@ -107,7 +103,7 @@ const updateUser = (req, res, next) => {
   const userId = req.user._id;
   const { name, about } = req.body;
 
-  return User.findByIdAndUpdate(
+  User.findByIdAndUpdate(
     userId,
     { name, about },
     {
@@ -135,7 +131,7 @@ const updateAvatar = (req, res, next) => {
   const userId = req.user._id;
   const { avatar } = req.body;
 
-  return User.findByIdAndUpdate(
+  User.findByIdAndUpdate(
     userId,
     { avatar },
     {
