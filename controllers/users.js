@@ -50,12 +50,12 @@ const login = (req, res, next) => {
   User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'secret', { expiresIn: '7d' }); // TODO вместо secret надо сформировать строку для токена
-      res
-        .cookie('token', token, {
-          maxAge: 3600000,
-          httpOnly: true,
-        })
-        .send({ message: 'Авторизация прошла успешно' });
+      res.send({ token });
+      // .cookie('token', token, {
+      //   maxAge: 3600000,
+      //   httpOnly: true,
+      // })
+      // .send({ message: 'Авторизация прошла успешно' });
     })
     .catch((err) => {
       next(err);
