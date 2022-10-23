@@ -1,6 +1,6 @@
 const { Joi } = require('celebrate');
 
-const URL_REGEXP = require('../utils/constants');
+const URL_REGEXP = require('./constants');
 
 const signupSchema = {
   body: Joi.object().keys({
