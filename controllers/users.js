@@ -75,29 +75,20 @@ const getUserInfo = (req, res, next) => {
     .catch(next);
 };
 
-// const getUserById = (req, res) => { // TODO Думаю этот метод больше не нужен
-//   const { userId } = req.params;
+const getUserById = (req, res, next) => {
+  const { userId } = req.params;
 
-//   return User.findById(userId).orFail(new Error('Not found'))
-//     .then((user) => res.send({ data: user }))
-//     .catch((err) => {
-//       if (err instanceof mongoose.Error.CastError) {
-//         return res
-//           .status(ERRORS.badRequest.errorCode)
-//           .send({ message: ERRORS.badRequest.errorMessage });
-//       }
+  return User.findById(userId)
+    .orFail(new NotFoundError(`Пользователь с id ${userId} не найден`))
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        next(new BadRequestError('Некорректный id пользователя'));
+      }
 
-//       if (err.message === 'Not found') {
-//         return res
-//           .status(ERRORS.notFound.errorCode)
-//           .send({ message: ERRORS.notFound.errorMessage });
-//       }
-
-//       return res
-//         .status(ERRORS.defaultError.errorCode)
-//         .send({ message: ERRORS.defaultError.errorMessage });
-//     });
-// };
+      next(err);
+    });
+};
 
 const updateUser = (req, res, next) => {
   const userId = req.user._id;
@@ -155,7 +146,7 @@ module.exports = {
   login,
   getUsers,
   getUserInfo,
-  // getUserById,
+  getUserById,
   updateUser,
   updateAvatar,
 };

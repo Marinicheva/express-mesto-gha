@@ -1,17 +1,20 @@
 const router = require('express').Router();
+const { celebrate } = require('celebrate');
+
+const { updateUserSchema } = require('../utils/userValidationSchemas');
 
 const {
   getUsers,
   getUserInfo,
-  // getUserById,
+  getUserById,
   updateUser,
   updateAvatar,
 } = require('../controllers/users');
 
 router.get('/', getUsers);
 router.get('/me', getUserInfo);
-// router.get('/:userId', getUserById); // TODO Нужен ли теперь этот метод????
-router.patch('/me', updateUser);
-router.patch('/me/avatar', updateAvatar);
+router.get('/:userId', getUserById);
+router.patch('/me', celebrate(updateUserSchema), updateUser);
+router.patch('/me/avatar', celebrate(updateUserSchema), updateAvatar);
 
 module.exports = router;

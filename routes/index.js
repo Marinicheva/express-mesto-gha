@@ -6,13 +6,13 @@ const cardRouter = require('./cards');
 
 const { createUser, login } = require('../controllers/users');
 
-const { signupSchema, loginSchema } = require('../utils/userValidationSchemas');
+const { authSchema } = require('../utils/userValidationSchemas');
 
 const { auth } = require('../middlewares/auth');
 const { NotFoundError } = require('../utils/errors');
 
-router.post('/signup', celebrate(signupSchema), createUser);
-router.post('/signin', celebrate(loginSchema), login);
+router.post('/signup', celebrate(authSchema), createUser);
+router.post('/signin', celebrate(authSchema), login);
 
 router.use('/users', auth, userRouter);
 router.use('/cards', auth, cardRouter);
