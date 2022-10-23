@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
+const URL_REGEXP = require('../utils/constants');
 const { UnauthorizedError, BadRequestError } = require('../utils/errors');
 
 const userSchema = new mongoose.Schema({
@@ -20,10 +21,7 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-    validate: (value) => {
-      const regex = /https?:\/\/(w{3}.)?(\S)*\.\w{2,3}((\/\w+)+(\/\S+)+)?/;
-      return regex.test(value);
-    },
+    validate: (value) => URL_REGEXP.test(value),
   },
   email: {
     type: String,
