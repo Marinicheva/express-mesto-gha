@@ -19,9 +19,9 @@ const createUser = (req, res, next) => {
   } = req.body;
 
   // Пароль не передан или слишком короткий
-  if (!password || password.length < 8) {
-    throw new BadRequestError('Пароль должен быть не менее 8 символов');
-  }
+  // if (!password || password.length < 8) {
+  //   throw new BadRequestError('Пароль должен быть не менее 8 символов');
+  // }
 
   bcrypt.hash(password, 10)
     .then((hash) => {
