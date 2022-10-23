@@ -7,8 +7,6 @@ const {
   NotFoundError,
 } = require('../utils/errors');
 
-const ERRORS = require('../utils/constants'); // TODO Don't forget to remove when set central errorHandler
-
 const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
@@ -78,28 +76,23 @@ const addLike = (req, res, next) => {
     });
 };
 
-const removeLike = (req, res) => {
+const removeLike = (req, res, next) => {
+  const { cardId } = req.params;
+
   Card.findByIdAndUpdate(
-    req.params.cardId,
+    cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
-  ).orFail(new Error('NotFoundError'))
+  )
+    .orFail(new NotFoundError(`Карточка с id ${cardId} не найдена`))
     .then((card) => res.send(card))
     .catch((err) => {
+      // Некорректный id карточки
       if (err instanceof mongoose.Error.CastError) {
-        return res
-          .status(ERRORS.badRequest.errorCode)
-          .send({ message: ERRORS.badRequest.errorMessage });
+        next(new BadRequestError('Передан некорректный id карточки'));
       }
 
-      if (err.message === 'NotFoundError') {
-        return res
-          .status(ERRORS.notFound.errorCode)
-          .send({ message: ERRORS.notFound.errorMessage });
-      }
-      return res
-        .status(ERRORS.defaultError.errorCode)
-        .send({ message: ERRORS.defaultError.errorMessage });
+      next(err);
     });
 };
 
