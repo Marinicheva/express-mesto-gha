@@ -18,6 +18,9 @@ const updateUserSchema = {
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().regex(URL_REGEXP),
   }),
+  params: Joi.object().keys({
+    userId: Joi.string().alphanum().length(24),
+  }),
 };
 
 module.exports = {

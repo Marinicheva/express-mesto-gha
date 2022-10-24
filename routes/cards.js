@@ -12,7 +12,7 @@ const {
 const cardValidationSchema = require('../utils/cardValidationSchema');
 
 router.get('/', getCards);
-router.post('/', createCard);
+router.post('/', celebrate(cardValidationSchema), createCard);
 router.delete('/:cardId', celebrate(cardValidationSchema), deleteCard);
 router.put('/:cardId/likes', celebrate(cardValidationSchema), addLike);
 router.delete('/:cardId/likes', celebrate(cardValidationSchema), removeLike);
