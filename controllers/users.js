@@ -37,14 +37,12 @@ const createUser = (req, res, next) => {
       // Данные пользователя не соответствуют схеме
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Переданы некорректные или неполные данные'));
-      }
-
-      // Такой email уже есть в БД
-      if (err.code === 11000) {
+      } else if (err.code === 11000) {
+        // Такой email уже есть в БД
         next(new ConflictError('Пользователь с таким e-mail уже существует'));
+      } else {
+        next(err);
       }
-
-      next(err);
     });
 };
 
@@ -105,14 +103,12 @@ const updateUser = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         // Переданные новые данные пользователя не соответвуют схеме
         next(new BadRequestError('Переданные некорректные данные пользователя'));
-      }
-
-      if (err instanceof mongoose.Error.CastError) {
+      } else if (err instanceof mongoose.Error.CastError) {
         // Некорретный id пользователя
         next(new BadRequestError('Некорректный id пользователя'));
+      } else {
+        next(err);
       }
-
-      next(err);
     });
 };
 
@@ -133,9 +129,9 @@ const updateAvatar = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         // Переданные данные аватара не соответсвуют схеме
         next(new BadRequestError('Переданы некорректные данные аватара пользователя'));
+      } else {
+        next(err);
       }
-
-      next(err);
     });
 };
 
