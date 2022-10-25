@@ -9,7 +9,7 @@ const {
   BadRequestError,
   NotFoundError,
   ConflictError,
-} = require('../utils/Errors');
+} = require('../utils/errors');
 
 const createUser = (req, res, next) => {
   const newUser = {
