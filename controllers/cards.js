@@ -28,8 +28,9 @@ const createCard = (req, res, next) => {
       // Некорретные данные
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -40,19 +41,19 @@ const deleteCard = (req, res, next) => {
     .orFail(new NotFoundError(`Карточка с id ${cardId} не найдена`))
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
-        next(new ForbiddenError('Нет прав для выполнения этого действия'));
+        return next(new ForbiddenError('Нет прав для выполнения этого действия'));
       }
 
-      Card.findByIdAndRemove(cardId)
+      return Card.findByIdAndRemove(cardId)
         .then((deletedCard) => res.send(deletedCard));
     })
     .catch((err) => {
       // Некорректный ID карточки
       if (err instanceof mongoose.Error.CastError) {
         next(new BadRequestError('Указан некорректный id картчоки'));
+      } else {
+        next(err);
       }
-
-      next(err);
     });
 };
 
@@ -70,9 +71,9 @@ const addLike = (req, res, next) => {
       if (err instanceof mongoose.Error.CastError) {
         // Некорректный id карточки
         next(new BadRequestError('Передан некорректный id карточки'));
+      } else {
+        next(err);
       }
-
-      next(err);
     });
 };
 
@@ -90,9 +91,9 @@ const removeLike = (req, res, next) => {
       // Некорректный id карточки
       if (err instanceof mongoose.Error.CastError) {
         next(new BadRequestError('Передан некорректный id карточки'));
+      } else {
+        next(err);
       }
-
-      next(err);
     });
 };
 
