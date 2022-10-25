@@ -18,12 +18,12 @@ const loginedUserSchema = { // Залогиненный юзер
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().regex(URL_REGEXP),
   }),
-  headers: Joi.object().keys({
-    authorization: Joi.string().regex(TOKEN_REGEXP),
-  }).unknown(true),
   params: Joi.object().keys({
     userId: Joi.string().alphanum().length(24),
   }),
+  headers: Joi.object().keys({
+    authorization: Joi.string().regex(TOKEN_REGEXP),
+  }).unknown(true),
 };
 
 module.exports = {
