@@ -7,7 +7,7 @@ const {
   BadRequestError,
   NotFoundError,
   ConflictError,
-} = require('../utils/errors');
+} = require('../utils/Errors');
 
 const createUser = (req, res, next) => {
   const newUser = {
@@ -20,7 +20,7 @@ const createUser = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
   // Запрос к БД на создание user
     .then((hash) => User.create({ ...newUser, password: hash }))
-    // Отправляем в ответ данные о user
+    // Отправляем в ответ данные о созданном user
     .then((user) => {
       const resData = {
         email: user.email,
@@ -51,7 +51,7 @@ const login = (req, res, next) => {
 
   User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'secret', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, 'secret', { expiresIn: '7d' }); // TODO Вынести соль в константу
       res
         .cookie('token', token, {
           maxAge: 3600000,

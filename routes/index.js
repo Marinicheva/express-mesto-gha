@@ -4,12 +4,10 @@ const { celebrate } = require('celebrate');
 const userRouter = require('./users');
 const cardRouter = require('./cards');
 
-const { createUser, login } = require('../controllers/users');
-
 const { unloginedUserSchema, loginedUserSchema } = require('../utils/userValidationSchemas');
-
 const { auth } = require('../middlewares/auth');
-const { NotFoundError } = require('../utils/errors');
+const { createUser, login } = require('../controllers/users');
+const { NotFoundError } = require('../utils/Errors');
 
 router.post('/signup', celebrate(unloginedUserSchema), createUser);
 router.post('/signin', celebrate(unloginedUserSchema), login);

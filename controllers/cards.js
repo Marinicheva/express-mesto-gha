@@ -5,7 +5,7 @@ const {
   BadRequestError,
   ForbiddenError,
   NotFoundError,
-} = require('../utils/errors');
+} = require('../utils/Errors');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -40,7 +40,7 @@ const deleteCard = (req, res, next) => {
     .orFail(new NotFoundError(`Карточка с id ${cardId} не найдена`))
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
-        throw new ForbiddenError('Нет прав для выполнения этого действия');
+        next(new ForbiddenError('Нет прав для выполнения этого действия'));
       }
 
       Card.findByIdAndRemove(cardId)
