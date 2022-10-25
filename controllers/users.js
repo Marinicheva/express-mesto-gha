@@ -10,37 +10,39 @@ const {
 } = require('../utils/errors');
 
 const createUser = (req, res, next) => {
-  const {
-    email,
-    password,
-    name,
-    about,
-    avatar,
-  } = req.body;
+  const newUser = {
+    email: req.body.email,
+    name: req.body.name,
+    about: req.body.about,
+    avatar: req.body.avatar,
+  };
 
-  bcrypt.hash(password, 10)
-    .then((hash) => {
-      User.create({
-        email,
-        password: hash,
-        name,
-        about,
-        avatar,
-      })
-        .then((user) => res.send(user))
-        .catch((err) => {
-          // Данные пользователя не соответствуют схеме
-          if (err instanceof mongoose.Error.ValidationError) {
-            next(new BadRequestError('Переданы некорректные или неполные данные'));
-          }
+  bcrypt.hash(req.body.password, 10)
+  // Запрос к БД на создание user
+    .then((hash) => User.create({ ...newUser, password: hash }))
+    // Отправляем в ответ данные о user
+    .then((user) => {
+      const resData = {
+        email: user.email,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        _id: user._id,
+      };
+      res.send(resData);
+    })
+    .catch((err) => {
+      // Данные пользователя не соответствуют схеме
+      if (err instanceof mongoose.Error.ValidationError) {
+        next(new BadRequestError('Переданы некорректные или неполные данные'));
+      }
 
-          // Такой email уже есть в БД
-          if (err.code === 11000) {
-            next(new ConflictError('Пользователь с таким e-mail уже существует'));
-          }
+      // Такой email уже есть в БД
+      if (err.code === 11000) {
+        next(new ConflictError('Пользователь с таким e-mail уже существует'));
+      }
 
-          next(err);
-        });
+      next(err);
     });
 };
 
@@ -49,7 +51,7 @@ const login = (req, res, next) => {
 
   User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'secret', { expiresIn: '7d' }); // TODO вместо secret надо сформировать строку для токена
+      const token = jwt.sign({ _id: user._id }, 'secret', { expiresIn: '7d' });
       res
         .cookie('token', token, {
           maxAge: 3600000,
@@ -81,13 +83,7 @@ const getUserById = (req, res, next) => {
   return User.findById(userId)
     .orFail(new NotFoundError(`Пользователь с id ${userId} не найден`))
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
-        next(new BadRequestError('Некорректный id пользователя'));
-      }
-
-      next(err);
-    });
+    .catch(next);
 };
 
 const updateUser = (req, res, next) => {
