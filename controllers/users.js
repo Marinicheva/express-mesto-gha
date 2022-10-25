@@ -29,7 +29,7 @@ const createUser = (req, res, next) => {
         avatar: user.avatar,
         _id: user._id,
       };
-      res.send(resData);
+      res.status(201).send(resData);
     })
     .catch((err) => {
       // Данные пользователя не соответствуют схеме
