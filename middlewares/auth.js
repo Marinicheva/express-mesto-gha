@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 
 const { UnauthorizedError } = require('../utils/Errors');
 
+const { TOKEN_SIGN } = require('../utils/constants');
+
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
@@ -14,7 +16,7 @@ const auth = (req, res, next) => {
   let playload;
 
   try {
-    playload = jwt.verify(token, 'secret'); // TODO Не забудь - соль в константе
+    playload = jwt.verify(token, TOKEN_SIGN);
     req.user = playload;
     next();
   } catch (err) {
