@@ -53,11 +53,11 @@ const login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, TOKEN_SIGN, { expiresIn: '7d' });
       res
-        .cookie('token', token, {
+        .cookie('token', token, { // Использовать куку в авторизации, иначе этот код с куками удалить
           maxAge: 3600000,
           httpOnly: true,
         })
-        .send({ message: 'Авторизация прошла успешно', token });
+        .send({ message: 'Авторизация прошла успешно' });
     })
     .catch((err) => {
       next(err);
@@ -65,8 +65,12 @@ const login = (req, res, next) => {
 };
 
 const getUsers = (req, res, next) => User.find({})
-  .then((users) => res.send(users))
-  .catch(next);
+  .then((users) => {
+    res.send(users);
+  })
+  .catch((err) => {
+    next(err);
+  });
 
 const getUserInfo = (req, res, next) => {
   const userId = req.user._id;
