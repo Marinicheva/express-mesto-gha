@@ -1,6 +1,6 @@
 const { Joi } = require('celebrate');
 
-const URL_REGEXP = require('./constants');
+const { URL_REGEXP } = require('./constants');
 
 const createCardSchema = {
   body: Joi.object().keys({
@@ -9,7 +9,7 @@ const createCardSchema = {
   }),
 };
 
-const cardByIDSchema = {
+const getCardSchema = {
   params: Joi.object().keys({
     cardId: Joi.string().alphanum().length(24),
   }),
@@ -17,6 +17,6 @@ const cardByIDSchema = {
 
 module.exports = {
   createCardSchema,
-  cardByIDSchema,
+  getCardSchema,
 
 };

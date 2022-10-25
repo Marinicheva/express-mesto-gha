@@ -6,16 +6,16 @@ const cardRouter = require('./cards');
 
 const { createUser, login } = require('../controllers/users');
 
-const { authSchema } = require('../utils/userValidationSchemas');
+const { unloginedUserSchema, loginedUserSchema } = require('../utils/userValidationSchemas');
 
 const { auth } = require('../middlewares/auth');
 const { NotFoundError } = require('../utils/errors');
 
-router.post('/signup', celebrate(authSchema), createUser);
-router.post('/signin', celebrate(authSchema), login);
+router.post('/signup', celebrate(unloginedUserSchema), createUser);
+router.post('/signin', celebrate(unloginedUserSchema), login);
 
-router.use('/users', auth, userRouter);
-router.use('/cards', auth, cardRouter);
+router.use('/users', celebrate(loginedUserSchema), auth, userRouter);
+router.use('/cards', celebrate(loginedUserSchema), auth, cardRouter);
 
 router.get('/', (req, res) => {
   res.send('Это сейчас я маленькая строка. Но когда-нибудь я стану ГЛАВНОЙ страницей');

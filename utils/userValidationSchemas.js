@@ -1,8 +1,8 @@
 const { Joi } = require('celebrate');
 
-const URL_REGEXP = require('./constants');
+const { URL_REGEXP, TOKEN_REGEXP } = require('./constants');
 
-const authSchema = {
+const unloginedUserSchema = { // Незалогиненный юзер
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
@@ -12,18 +12,21 @@ const authSchema = {
   }),
 };
 
-const updateUserSchema = {
+const loginedUserSchema = { // Залогиненный юзер
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().regex(URL_REGEXP),
   }),
+  headers: Joi.object().keys({
+    authorization: Joi.string().regex(TOKEN_REGEXP),
+  }).unknown(true),
   params: Joi.object().keys({
     userId: Joi.string().alphanum().length(24),
   }),
 };
 
 module.exports = {
-  authSchema,
-  updateUserSchema,
+  unloginedUserSchema,
+  loginedUserSchema,
 };
