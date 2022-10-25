@@ -3,7 +3,7 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
 const { URL_REGEXP } = require('../utils/constants');
-const { UnauthorizedError, BadRequestError } = require('../utils/errors');
+const { BadRequestError } = require('../utils/errors');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -45,20 +45,21 @@ const userSchema = new mongoose.Schema({
 
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
-    .orFail(new UnauthorizedError('Необходима авторизация'))
-    .then((user) => {
-      if (!user) {
-        return Promise.reject(new BadRequestError(`Пользователь с e-mail ${email} не найден`));
-      }
-
-      return bcrypt.compare(password, user.password)
+    // .orFail(new UnauthorizedError('Необходима авторизация'))
+    .orFail(new BadRequestError(`Пользователь с e-mail ${email} не найден`))
+    .then((user) =>
+    // if (!user) {
+    //   return Promise.reject(new BadRequestError(`Пользователь с e-mail ${email} не найден`));
+    // }
+      // eslint-disable-next-line implicit-arrow-linebreak
+      bcrypt
+        .compare(password, user.password)
         .then((matched) => {
           if (!matched) {
             Promise.reject(new BadRequestError('Неправильная почта или пароль'));
           }
           return user;
-        });
-    });
+        }));
 };
 
 module.exports = mongoose.model('user', userSchema);
