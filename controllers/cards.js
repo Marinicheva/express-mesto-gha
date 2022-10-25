@@ -5,7 +5,7 @@ const {
   BadRequestError,
   ForbiddenError,
   NotFoundError,
-} = require('../utils/Errors');
+} = require('../utils/errors');
 
 const getCards = (req, res, next) => {
   Card.find({})
