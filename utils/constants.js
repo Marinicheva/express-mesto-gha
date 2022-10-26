@@ -1,6 +1,8 @@
+const crypto = require('crypto');
+
 const URL_REGEXP = /https?:\/\/(w{3}.)?(\S)*\.\w{2,3}((\/\w+)+(\/\S+)+)?/;
 
-const TOKEN_SIGN = 'don\'t say it anybody';
+const TOKEN_SIGN = crypto.randomBytes(16).toString('hex');
 
 module.exports = {
   URL_REGEXP,
