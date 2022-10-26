@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-
+const helmet = require('helmet');
 const { errors } = require('celebrate');
 
 const router = require('./routes');
@@ -16,6 +16,7 @@ app.use(express.json());
 mongoose.connect(MONGO_URL);
 
 app.use(limiter);
+app.use(helmet());
 
 app.use('/', router);
 
