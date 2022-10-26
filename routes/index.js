@@ -15,11 +15,7 @@ router.post('/signin', celebrate(unloginedUserSchema), login);
 router.use('/users', auth, userRouter);
 router.use('/cards', auth, cardRouter);
 
-router.get('/', (req, res) => {
-  res.send('Это сейчас я маленькая строка. Но когда-нибудь я стану ГЛАВНОЙ страницей');
-});
-
-router.use('*', (req, res, next) => {
+router.use('*', auth, (req, res, next) => {
   next(new NotFoundError('Запрашиваемый ресурс не найден'));
 });
 
