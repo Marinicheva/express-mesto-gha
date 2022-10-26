@@ -52,7 +52,7 @@ const login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, TOKEN_SIGN, { expiresIn: '7d' });
       res
-        .cookie('token', token, { // Использовать куку в авторизации, иначе этот код с куками удалить
+        .cookie('token', token, {
           maxAge: 3600000,
           httpOnly: true,
         })
