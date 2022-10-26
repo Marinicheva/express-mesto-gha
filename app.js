@@ -1,8 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+
 const { errors } = require('celebrate');
+
 const router = require('./routes');
+const limiter = require('./middlewares/requestLimiter');
 const handleErrors = require('./middlewares/handleErrors');
 
 const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
@@ -11,6 +14,8 @@ app.use(cookieParser());
 app.use(express.json());
 
 mongoose.connect(MONGO_URL);
+
+app.use(limiter);
 
 app.use('/', router);
 
