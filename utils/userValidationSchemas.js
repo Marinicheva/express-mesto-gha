@@ -19,7 +19,7 @@ const loginedUserSchema = { // Залогиненный юзер
     avatar: Joi.string().regex(URL_REGEXP),
   }),
   params: Joi.object().keys({
-    userId: Joi.string().length(24).hex().required(),
+    userId: Joi.string().length(24).hex(),
   }),
 };
 
