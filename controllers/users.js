@@ -5,11 +5,10 @@ const jwt = require('jsonwebtoken');
 const { TOKEN_SIGN } = require('../utils/constants');
 
 const User = require('../models/user');
-const {
-  BadRequestError,
-  NotFoundError,
-  ConflictError,
-} = require('../utils/errors');
+
+const BadRequestError = require('../errors/BadRequestError');
+const NotFoundError = require('../errors/NotFoundError');
+const ConflictError = require('../errors/ConflictError');
 
 const createUser = (req, res, next) => {
   const newUser = {

@@ -7,7 +7,7 @@ const cardRouter = require('./cards');
 const { unloginedUserSchema } = require('../utils/userValidationSchemas');
 const { auth } = require('../middlewares/auth');
 const { createUser, login } = require('../controllers/users');
-const { NotFoundError } = require('../utils/errors');
+const NotFoundError = require('../errors/NotFoundError');
 
 router.post('/signup', celebrate(unloginedUserSchema), createUser);
 router.post('/signin', celebrate(unloginedUserSchema), login);
