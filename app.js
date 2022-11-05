@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
 
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const router = require('./routes');
 const limiter = require('./middlewares/requestLimiter');
 const handleErrors = require('./middlewares/handleErrors');
@@ -18,7 +19,11 @@ mongoose.connect(MONGO_URL);
 app.use(limiter);
 app.use(helmet());
 
+app.use(requestLogger);
+
 app.use('/', router);
+
+app.use(errorLogger);
 
 app.use(errors());
 app.use(handleErrors);
