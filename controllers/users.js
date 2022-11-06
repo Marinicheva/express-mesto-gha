@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const { TOKEN_SIGN } = require('../utils/constants');
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 const User = require('../models/user');
 
@@ -50,7 +50,11 @@ const login = (req, res, next) => {
 
   User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, TOKEN_SIGN, { expiresIn: '7d' });
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' },
+      );
       res
         .cookie('token', token, {
           maxAge: 3600000,

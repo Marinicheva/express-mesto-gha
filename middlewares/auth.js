@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 const UnauthorizedError = require('../errors/UnauthorizedError');
-const { TOKEN_SIGN } = require('../utils/constants');
 
 const auth = (req, res, next) => {
   const { token } = req.cookies;
@@ -9,7 +10,7 @@ const auth = (req, res, next) => {
   let playload;
 
   try {
-    playload = jwt.verify(token, TOKEN_SIGN);
+    playload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
     req.user = playload;
     next();
   } catch (err) {

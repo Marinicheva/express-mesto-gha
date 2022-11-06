@@ -1,4 +1,5 @@
 const express = require('express');
+const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
@@ -10,7 +11,13 @@ const limiter = require('./middlewares/requestLimiter');
 const handleErrors = require('./middlewares/handleErrors');
 
 const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
+
+dotenv.config();
+
+// console.log(process.env.TOKEN_SIGN);
+
 const app = express();
+
 app.use(cookieParser());
 app.use(express.json());
 
