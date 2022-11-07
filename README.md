@@ -1,7 +1,7 @@
 [![Tests for sprint 14](https://github.com/Marinicheva/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/Marinicheva/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
 
 #  Учебный проект Mesto (бэкенд)
-## Описание проекта
+## Описание проекта:
 Mesto - это сервис, с помощью которого можно делиться с другими пользователями Интернета своими фотографиями.
 В данном проекте выполнена реализация бэкенд части проекта, в которой предусмотрено: 
 * запуск сервера;
