@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const { errors } = require('celebrate');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { simpleCors } = require('./middlewares/simpleCors');
 const router = require('./routes');
 const limiter = require('./middlewares/requestLimiter');
 const handleErrors = require('./middlewares/handleErrors');
@@ -27,6 +28,8 @@ app.use(limiter);
 app.use(helmet());
 
 app.use(requestLogger);
+
+app.use(simpleCors);
 
 app.use('/', router);
 
