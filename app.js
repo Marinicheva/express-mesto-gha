@@ -27,9 +27,9 @@ mongoose.connect(MONGO_URL);
 app.use(limiter);
 app.use(helmet());
 
-app.use(requestLogger);
-
 app.use(simpleCors);
+
+app.use(requestLogger);
 
 app.use('/', router);
 
