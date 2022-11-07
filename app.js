@@ -15,8 +15,6 @@ const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process
 
 dotenv.config();
 
-// console.log(process.env.TOKEN_SIGN);
-
 const app = express();
 
 app.use(cookieParser());
